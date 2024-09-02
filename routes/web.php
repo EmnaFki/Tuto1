@@ -14,6 +14,7 @@ Route::get('/', function () {
 Route::prefix('/blog')->name('blog.')->controller(BlogController::class)->group(function () {
 
     Route::get('/', 'index')->name('index');
+    Route::get('/new', 'create')->name('create');
 
     Route::get('/new', 'create')->name('create');
 
