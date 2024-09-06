@@ -2,20 +2,60 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\BlogFilterRequest;
 use App\Models\Post;
-use Illuminate\Contracts\Pagination\Paginator;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use App\Http\Requests\BlogFilterRequest;
+use App\Http\Requests\CreatePostRequest;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Contracts\Pagination\Paginator;
 
 class BlogController extends Controller
 {
+
     public function create(): View
     {
-        return view('blog.create');
+        $post = new Post();
+        return view('blog.create', ['post' => $post]);
     }
+
+    public function store(CreatePostRequest $request)
+    {
+        /*  $post = Post::create([
+            'title' => $request->input('title'),
+            'content' => $request->input('content'),
+            'slug' => Str::slug($request->input('title'))
+        ]); */
+        $post = Post::create($request->validated());
+
+        //dd($request->all());
+
+        return redirect()->route('blog.show', ['slug' => $post->slug, 'post' => $post->id])->with('success', "L'article a bien été sauvegardé");
+    }
+
+    public function edit(Post $post)
+    {
+        return view('blog.edit', ['post' => $post]);
+    }
+
+    public function update(Post $post, CreatePostRequest $request)
+    {
+        $post->update($request->validated());
+
+        //dd($request->all());
+
+        return redirect()->route('blog.show', ['slug' => $post->slug, 'post' => $post->id])->with('success', "L'article a bien été modifié");
+    }
+
+    /*  public function delete(Post $post)
+    {
+        $post->delete();
+
+        return redirect()->route('blog.index'); //->with('success', "L'article a bien été modifié");
+    } */
+
     public function index(): View
     {
         // c'était pour tester la validation sans passer par l'objet request personnalisé
